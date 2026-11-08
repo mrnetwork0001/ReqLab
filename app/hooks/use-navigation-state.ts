@@ -18,13 +18,17 @@ export interface NavigationState {
   path?: string;
   publicPath?: string;
   threadId?: string;
+  endpointId?: string;
+  scenarioId?: string;
+  tab?: string;
 }
 
 export function useNavigationState() {
   useAgentRouteState<NavigationState>({
     browserTabId: TAB_ID,
     requestSource: TAB_ID,
-    getNavigationState: ({ pathname }) => navigationStateForPath(pathname),
+    getNavigationState: ({ pathname, searchParams }) =>
+      navigationStateForPath(pathname, searchParams),
     getCommandPath: commandPathForNavigation,
   });
 }
@@ -62,17 +66,31 @@ function matchesPathPrefix(pathname: string, prefix: string): boolean {
   return pathname === prefix || pathname.startsWith(`${prefix}/`);
 }
 
-export function navigationStateForPath(pathname: string): NavigationState {
+export function navigationStateForPath(
+  pathname: string,
+  searchParams?: URLSearchParams,
+): NavigationState {
   const threadId = threadIdFromPath(pathname);
+  const endpointMatch = pathname.match(/^\/studio\/([^/?#]+)/);
+  const endpointId = endpointMatch?.[1]
+    ? safeDecode(endpointMatch[1])
+    : undefined;
+  const scenarioId = searchParams?.get("scenarioId") ?? undefined;
+  const tab = searchParams?.get("tab") ?? undefined;
+
   return {
     view: viewForPath(pathname),
     path: pathname,
     publicPath: appPathFromLocalRoute(pathname),
     ...(threadId ? { threadId } : {}),
+    ...(endpointId ? { endpointId } : {}),
+    ...(scenarioId ? { scenarioId } : {}),
+    ...(tab ? { tab } : {}),
   };
 }
 
 function viewForPath(pathname: string): string {
+  if (pathname.startsWith("/studio")) return "studio";
   if (isChatPathname(pathname)) return "chat";
   if (pathname === HOME_PATH) return "home";
   if (pathname.startsWith("/database")) return "database";
@@ -88,6 +106,8 @@ function viewForPath(pathname: string): string {
 
 function pathForView(view?: string): string {
   switch (view) {
+    case "studio":
+      return "/studio";
     case "chat":
     case "ask":
       return NEW_CHAT_PATH;
@@ -106,14 +126,30 @@ function pathForView(view?: string): string {
     case "team":
       return "/settings/organization";
     default:
-      return HOME_PATH;
+      return "/studio";
   }
 }
 
 export function pathForCommand(command: any): string {
+  if (command?.endpointId) {
+    const qs = new URLSearchParams();
+    if (command?.scenarioId) qs.set("scenarioId", String(command.scenarioId));
+    if (command?.tab) qs.set("tab", String(command.tab));
+    const suffix = qs.toString() ? `?${qs.toString()}` : "";
+    return `/studio/${encodeURIComponent(String(command.endpointId))}${suffix}`;
+  }
   const path = pathForView(command?.view);
   if (command?.view !== "chat" && command?.view !== "ask") return path;
   const threadId =
     typeof command?.threadId === "string" ? command.threadId.trim() : "";
   return threadId ? chatThreadPath(threadId) : path;
+}
+
+/** A malformed escape like `/studio/%E0` must not crash the app shell. */
+function safeDecode(value: string): string {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
 }
