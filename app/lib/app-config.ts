@@ -1,5 +1,5 @@
 const rawAppName = "reqlab";
-const rawAppTitle = "Reqlab";
+const rawAppTitle = "ReqLab";
 
 const APP_NAME_PLACEHOLDER = "{" + "{APP_NAME}}";
 const APP_TITLE_PLACEHOLDER = "{" + "{APP_TITLE}}";
