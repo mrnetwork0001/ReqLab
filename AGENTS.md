@@ -1,6 +1,6 @@
-# Chat — Agent Guide
+# ReqLab — Agent Guide
 
-Chat is the minimal chat-first agent-native app. `/` redirects to shared sign-in, then `/home`, the editable Get started page. Chat lives at `/chat`; new chats start there. Actions carry capabilities; screens exist only for durable workflows.
+ReqLab is an Agent-Native API, webhook, and chaos testing studio. `/` opens shared sign-in, then lands on `/studio` (`app.homePath`). The Studio is the primary workflow; chat lives at `/chat`. Actions carry every capability; the Studio screens show and edit the same data the agent works on.
 
 ## Skills
 
@@ -19,15 +19,43 @@ For custom branding, keep `server/plugins/agent-native-email-branding.ts` aligne
 
 ## Application state
 
-- `navigation` describes the view and selected ids. Chat is `chat` at `/chat` and `/chat/<threadId>`; the Get started page is `home` at `/home`; `/` opens shared sign-in/signup.
+- `navigation` describes the view and selected ids. The Studio is `studio` at `/studio` and `/studio/<endpointId>`; chat is `chat` at `/chat` and `/chat/<threadId>`; `/home` is the template Get started page and is not linked.
 - Use `navigate` when supported and `view-screen` for a fresh read of visible details; basic navigation is already in `<current-screen>`.
 
-## Building a domain app
+## Working on ReqLab
 
-Choose the primary workflow and route before editing. Add a domain route under `app/routes/` and set `app.homePath` in `server/plugins/agent-native-email-branding.ts` with `defineAppConfig`. The default Get started page lives at `/home`, and Chat stays at `/chat`; edit `app/routes/home.tsx` when replacing that page with a domain-specific home. Add a static link in `app/components/layout/Sidebar.tsx` before `ChatThreadsSection`; `Header.tsx` uses `APP_TITLE` elsewhere. Shared sidebar and AgentInspector remain.
+Domain guidance lives in `.agents/skills/api-chaos-testing/SKILL.md`; read it before generating scenarios, diagnosing failures, or writing contract guards. Server logic: `server/lib/runner.ts` (gateway guard, sandbox vs. external fetch, verdicts), `server/lib/sandbox-apis.ts` (sandbox APIs with real bugs), `server/lib/contract-guard.ts` (safe Zod compiler). Use `adding-a-feature` for parity and `frontend-design` for user-facing screens. Keep the Studio link in `app/components/layout/Sidebar.tsx` before `ChatThreadsSection`.
 
-Use `adding-a-feature` for functional parity and `frontend-design` for a user-facing screen. Keep feature guidance here; do not rewrite `README.md` or `DESIGN.md`. After all edits, run one typecheck, one doctor check, and one browser smoke of the primary workflow, including overlap rejection, cancellation freeing the slot, and authenticated landing. Skip production build and extra test suites.
+After edits, run `pnpm typecheck`, `pnpm test` (guard compiler and sandbox crash/fix suite), `pnpm agent-native:doctor` (fix findings before done), and one browser smoke of `/studio`: seed the demo suite, run the Checkout Chaos Matrix (2 real `500` crashes), apply the checkout guard, re-run (all pass), and confirm the authenticated landing goes to `/studio`. Skip the production build.
 
 Before building common workspace or agent UI, read `agent-native-toolkit`; for supported customization, read `customizing-agent-native`.
 
-- Guarded verification: run `pnpm agent-native:doctor`; fix findings before done.
+## ReqLab Studio
+
+Stress-test APIs and webhooks, run adversarial chaos matrices, uncover 500 crashes, and apply Zod contract guards. `/studio` lists endpoints; `/studio/:endpointId?scenarioId=<id>` is the Chaos Matrix, Payload Editor, and Zod Contract Guard Studio. Chat stays at `/chat`.
+
+- Endpoints are org-visible when an organization is active and private to their creator otherwise. Test scenarios and scenario runs belong to an endpoint and inherit its access. Viewers can read; changing or running anything (update/delete endpoint, create/update/delete scenario, run-scenarios) requires editor access.
+- `create-endpoint` rejects duplicate `(method, targetUrl)` with `endpoint_conflict` (409). `create-scenario` locks the parent endpoint and rejects duplicate scenario `title` with `scenario_conflict` (409); report conflicts instead of retrying with another name unless asked.
+- Targets: `/sandbox/*` (in-process APIs with real bugs), any public `https://` URL (SSRF-guarded), or `http://localhost:PORT` in development only (production blocks loopback).
+- Never put real tokens in headers. Reference `{{secret:REQLAB_TARGET_API_KEY}}`, `{{secret:REQLAB_TARGET_API_KEY_2}}`, or `{{secret:REQLAB_WEBHOOK_SIGNING_SECRET}}`; the user sets values in Settings → API keys. `run-scenarios` returns `missing_secret` (422) when one is unset; ask the user to add it, don't ask for the value in chat.
+- Bug Hunt: drive `attack-batch` in a loop. Each round, read every `responseExcerpt`/`bugSummary`, then design a sharper next batch aimed at whatever leaked a stack trace or accepted bad input. `bug_exposed` = real 5xx crash; `assertion_failed` = wrong status. Stop at the first crash (or ~4 rounds), then diagnose and guard it.
+- Import: `import-openapi` with a `specUrl` creates endpoints + first-wave attacks; then `run-scenarios` or `attack-batch` each one. It de-dupes by method+URL.
+- On Studio pages `navigation` adds `endpointId`, `scenarioId`, and `tab`; tab selection also writes `selection`.
+
+| Action | Purpose |
+| --- | --- |
+| list-endpoints | List endpoints with pass and 500 bug counts |
+| get-endpoint | Get endpoint spec, scenarios, and recent runs |
+| create-endpoint | Create an API or webhook endpoint (409 on duplicate method+URL) |
+| update-endpoint | Update endpoint spec or apply a Zod contractZodSchema guard (`invalid_contract` 422 if it does not compile) |
+| delete-endpoint | Delete an endpoint with its scenarios, runs, and shares (editor access) |
+| create-scenario | Add a baseline or adversarial chaos scenario (409 on duplicate title) |
+| update-scenario | Update a scenario's payload, headers, or expected status |
+| delete-scenario | Delete a scenario |
+| run-scenarios | Execute one scenario or the full Chaos Matrix for an endpoint |
+| import-openapi | Import an OpenAPI 3.x / Swagger 2.0 spec (URL or text) into one endpoint per operation, each seeded with a baseline + derived attack scenarios |
+| attack-batch | One Bug Hunt round: persist a batch of adversarial attacks, run them live, and return real statuses + response excerpts so the agent can escalate |
+| export-contract-guard | Export the saved guard as Express, Hono, or Fetch middleware to ship in the real API |
+| enable-webhook-inbox | Create or rotate the endpoint's public inbox URL `/hooks/<token>` (editor) |
+| list-webhook-captures | List real captured deliveries; pass `replayHeadersJson` and `bodyText` to create-scenario to replay one |
+| seed-demo-suite | Seed 3 sandbox APIs with real bugs, 1 live HTTPS API, and 12 chaos scenarios |
