@@ -12,10 +12,8 @@ import {
 } from "@agent-native/toolkit/app/chat/ownership-history";
 import { OrgSwitcher } from "@agent-native/toolkit/app/org";
 import { openCommandMenu } from "@agent-native/toolkit/app/shared";
-import { AgentNativeIcon } from "@agent-native/toolkit/app/shared/AgentNativeIcon";
 import {
   IconEdit,
-  IconHome,
   IconLayoutSidebarLeftCollapse,
   IconLayoutSidebarLeftExpand,
   IconLoader2,
@@ -31,8 +29,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { APP_TITLE } from "@/lib/app-config";
-import { chatThreadPath, HOME_PATH, threadIdFromPath } from "@/lib/chat-paths";
+import { chatThreadPath, threadIdFromPath } from "@/lib/chat-paths";
 import { cn } from "@/lib/utils";
+
+import { ReqLabMark, StudioNav } from "./StudioNav";
 
 const CHAT_STORAGE_KEY = "chat";
 const CHAT_ACTIVE_THREAD_KEY = `agent-chat-active-thread:${CHAT_STORAGE_KEY}`;
@@ -115,42 +115,6 @@ function persistActiveThreadId(threadId: string) {
   try {
     localStorage.setItem(CHAT_ACTIVE_THREAD_KEY, threadId);
   } catch {}
-}
-
-function HomeNavLink({ collapsed }: { collapsed: boolean }) {
-  const t = useT();
-  const location = useLocation();
-  const active = location.pathname === HOME_PATH;
-  const link = (
-    <Link
-      to={HOME_PATH}
-      aria-current={active ? "page" : undefined}
-      aria-label={collapsed ? t("navigation.home") : undefined}
-      className={cn(
-        "flex items-center text-sidebar-accent-foreground transition-colors hover:bg-sidebar-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring",
-        active && "bg-sidebar-accent",
-        collapsed
-          ? "size-8 justify-center rounded-md"
-          : "h-8 w-full gap-3 rounded-lg px-3 text-sm font-medium",
-      )}
-    >
-      <IconHome className="size-4 shrink-0" strokeWidth={1.8} />
-      <span className={collapsed ? "sr-only" : "truncate"}>
-        {t("navigation.home")}
-      </span>
-    </Link>
-  );
-
-  if (collapsed) {
-    return (
-      <Tooltip>
-        <TooltipTrigger asChild>{link}</TooltipTrigger>
-        <TooltipContent side="right">{t("navigation.home")}</TooltipContent>
-      </Tooltip>
-    );
-  }
-
-  return <div className="px-2">{link}</div>;
 }
 
 function ChatThreadsSection({ collapsed }: { collapsed: boolean }) {
@@ -370,14 +334,11 @@ export function Sidebar({
           <Tooltip>
             <TooltipTrigger asChild>
               <Link
-                to="/"
+                to="/studio"
                 aria-label={APP_TITLE}
                 className="flex size-8 items-center justify-center rounded outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
               >
-                <AgentNativeIcon
-                  aria-hidden="true"
-                  className="h-3.5 w-6 text-sidebar-accent-foreground"
-                />
+                <ReqLabMark />
               </Link>
             </TooltipTrigger>
             <TooltipContent side="right">{APP_TITLE}</TooltipContent>
@@ -385,13 +346,10 @@ export function Sidebar({
         ) : (
           <>
             <Link
-              to="/"
+              to="/studio"
               className="flex min-w-0 flex-1 items-center gap-3 rounded outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
             >
-              <AgentNativeIcon
-                aria-hidden="true"
-                className="h-3.5 w-6 shrink-0 text-sidebar-accent-foreground"
-              />
+              <ReqLabMark />
               <span className="truncate text-sm font-semibold text-sidebar-accent-foreground">
                 {APP_TITLE}
               </span>
@@ -407,7 +365,12 @@ export function Sidebar({
           collapsed ? "items-center gap-1 px-1 py-2" : "pt-1",
         )}
       >
-        <HomeNavLink collapsed={collapsed} />
+        <StudioNav collapsed={collapsed} />
+        {collapsed ? null : (
+          <div className="px-5 pb-1 pt-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+            Agent sessions
+          </div>
+        )}
         <ChatThreadsSection collapsed={collapsed} />
       </nav>
 
