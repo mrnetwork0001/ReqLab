@@ -75,7 +75,9 @@ function StatusDot({ bugs, mismatches, untested }: { bugs: number; mismatches: n
  */
 export function StudioNav({ collapsed }: { collapsed: boolean }) {
   const location = useLocation();
-  const { data } = useActionQuery("list-endpoints", {});
+  // The agent mutates endpoints from the chat, which does not invalidate this
+  // query. Poll so crash/pass counts flip live without a manual refresh.
+  const { data } = useActionQuery("list-endpoints", {}, { refetchInterval: 2500 });
   const endpoints = data?.endpoints ?? [];
   const overviewActive = location.pathname === "/studio" || location.pathname === "/studio/";
   const totalBugs = endpoints.reduce((sum, e) => sum + e.bugsExposedCount, 0);

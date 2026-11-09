@@ -249,7 +249,10 @@ export default function StudioIndexRoute() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const queryKey = ["action", "list-endpoints", {}];
-  const { data, isPending } = useActionQuery("list-endpoints", {});
+  // Poll so agent-driven changes (seed, run, guard) refresh the overview live.
+  const { data, isPending } = useActionQuery("list-endpoints", {}, {
+    refetchInterval: 2500,
+  });
 
   const [name, setName] = useState("");
   const [method, setMethod] = useState<

@@ -280,7 +280,11 @@ export default function StudioEndpointDetailRoute() {
 
   const params = useMemo(() => ({ id: endpointId }), [endpointId]);
   const queryKey = ["action", "get-endpoint", params];
-  const { data, isPending } = useActionQuery("get-endpoint", params);
+  // Poll so the Chaos Matrix rows flip live when the agent runs or guards
+  // this endpoint from the chat (agent writes don't invalidate this query).
+  const { data, isPending } = useActionQuery("get-endpoint", params, {
+    refetchInterval: 2500,
+  });
 
   const [newTitle, setNewTitle] = useState("");
   const [newCategory, setNewCategory] = useState<
