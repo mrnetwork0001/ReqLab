@@ -1,5 +1,6 @@
 import { useActionQuery } from "@agent-native/core/client/hooks";
-import { IconBolt, IconLayoutGrid } from "@tabler/icons-react";
+import { IconLayoutGrid } from "@tabler/icons-react";
+import { useId } from "react";
 import { Link, useLocation } from "react-router";
 
 import {
@@ -9,18 +10,50 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
-/** ReqLab product mark used in the sidebar header. */
+/**
+ * ReqLab product mark: a request signal that spikes into a 500 crash
+ * (amber to red) and settles flat on a green verdict (emerald to cyan) —
+ * the find-the-crash, prove-the-fix loop in one glyph.
+ */
 export function ReqLabMark({ className }: { className?: string }) {
+  const id = useId();
+  const crash = `${id}-crash`;
+  const pass = `${id}-pass`;
   return (
-    <span
-      aria-hidden="true"
-      className={cn(
-        "flex size-6 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-rose-500 to-amber-500 text-white shadow-sm",
-        className,
-      )}
+    <svg
+      viewBox="0 0 48 48"
+      role="img"
+      aria-label="ReqLab"
+      className={cn("size-6 shrink-0", className)}
     >
-      <IconBolt className="size-3.5" strokeWidth={2.4} />
-    </span>
+      <defs>
+        <linearGradient id={crash} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#fbbf24" />
+          <stop offset="1" stopColor="#f43f5e" />
+        </linearGradient>
+        <linearGradient id={pass} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="#34d399" />
+          <stop offset="1" stopColor="#22d3ee" />
+        </linearGradient>
+      </defs>
+      <path
+        d="M9 27 L17 27 L20.5 13 L25 34 L28 24 L31 24"
+        fill="none"
+        stroke={`url(#${crash})`}
+        strokeWidth="2.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M31 24 L39 24"
+        fill="none"
+        stroke={`url(#${pass})`}
+        strokeWidth="2.8"
+        strokeLinecap="round"
+      />
+      <circle cx="24.6" cy="33.5" r="2.1" fill={`url(#${crash})`} />
+      <circle cx="39" cy="24" r="2.1" fill={`url(#${pass})`} />
+    </svg>
   );
 }
 
