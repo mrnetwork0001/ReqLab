@@ -33,6 +33,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { ReqLabMark } from "@/components/layout/StudioNav";
 import { ImportSpecDialog } from "@/components/studio/ImportSpecDialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -411,9 +412,12 @@ export default function StudioIndexRoute() {
         />
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div className="min-w-0 space-y-1.5">
-            <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-              ReqLab
-            </h1>
+            <div className="flex items-center gap-2.5">
+              <ReqLabMark className="size-8 sm:size-9" />
+              <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+                ReqLab
+              </h1>
+            </div>
             <p className="max-w-lg text-sm text-muted-foreground">
               Break your APIs on purpose. The agent finds the real crash and
               writes the Zod guard that fixes it.
