@@ -4,7 +4,7 @@
 
 ReqLab is an API, webhook, and chaos-testing studio built on the Agent-Native framework. You point it at an API, it fires adversarial requests, and every result is measured one way: **does the endpoint handle bad input, or does it crash?** When something crashes, the agent reads the real exception, writes a Zod contract guard, and re-runs until the red rows turn green. Nothing here returns a canned error. Every result comes from executing real code or calling a real server.
 
-Built for the Builder.io Agent-Native Hackathon (Nov 2026) · for the judges, and for developers who clone it · App: **<LIVE_URL>** · Demo: **<VIDEO_URL>** · Code: [github.com/mrnetwork0001/ReqLab](https://github.com/mrnetwork0001/ReqLab)
+Built for the Builder.io Agent-Native Hackathon (Nov 2026) · for the judges, and for developers who clone it · App: **[usereqlab.vercel.app](https://usereqlab.vercel.app)** · Demo: **<VIDEO_URL>** · Code: [github.com/mrnetwork0001/ReqLab](https://github.com/mrnetwork0001/ReqLab)
 
 **Judges, start here:** open `/studio`, click **Checkout & Charge Ledger API**, press **Run** (two rows turn red with real stack traces), then click **Bug Hunt** and watch the agent diagnose, guard, and re-run until they turn green. For proof it is not a toy, click **Import OpenAPI**, load the Swagger Petstore chip, and run `PUT /pet`: ReqLab finds a real unhandled 500 in a public API it did not write.
 
@@ -292,7 +292,7 @@ ReqLab is a server app with a database, so it deploys as Vercel functions with a
 
 The scheduled-job sweep (`/_agent-native/jobs/_process-sweep`) is wired as a Vercel cron and requires `CRON_SECRET`. ReqLab has no recurring work of its own, so a daily schedule is fine on the Hobby plan.
 
-Live URL: **<LIVE_URL>** (placeholder until deployed).
+Live URL: **[usereqlab.vercel.app](https://usereqlab.vercel.app)** (live on Vercel, backed by Neon Postgres).
 
 ## Repository map
 
