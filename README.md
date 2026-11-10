@@ -1,7 +1,5 @@
 # ReqLab
 
-[![Live](https://img.shields.io/badge/live-usereqlab.vercel.app-22d3ee?style=flat-square)](https://usereqlab.vercel.app) [![Demo](https://img.shields.io/badge/demo-4--min%20walkthrough-f43f5e?style=flat-square)](https://clips.agent-native.com/r/z7WjIjLJs6bD) [![Built with Agent-Native](https://img.shields.io/badge/built%20with-Agent--Native-34d399?style=flat-square)](https://agent-native.com) ![Tests](https://img.shields.io/badge/tests-29%2F29%20passing-34d399?style=flat-square)
-
 **Break your APIs on purpose. An AI agent finds the real crash and writes the guard that fixes it, on the same screen you are watching.**
 
 ReqLab is an API, webhook, and chaos-testing studio built on the Agent-Native framework. You point it at an API, it fires adversarial requests, and every result is measured one way: **does the endpoint handle bad input, or does it crash?** When something crashes, the agent reads the real exception, writes a Zod contract guard, and re-runs until the red rows turn green. Nothing here returns a canned error. Every result comes from executing real code or calling a real server.
