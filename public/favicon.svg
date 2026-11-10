@@ -1,10 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" role="img" aria-label="ReqLab">
   <defs>
-    <linearGradient id="crash" x1="0" y1="0" x2="1" y2="1">
+    <linearGradient id="crash" gradientUnits="userSpaceOnUse" x1="9" y1="13" x2="31" y2="34">
       <stop offset="0" stop-color="#fbbf24"/>
       <stop offset="1" stop-color="#f43f5e"/>
     </linearGradient>
-    <linearGradient id="pass" x1="0" y1="0" x2="1" y2="0">
+    <linearGradient id="pass" gradientUnits="userSpaceOnUse" x1="31" y1="24" x2="39" y2="24">
       <stop offset="0" stop-color="#34d399"/>
       <stop offset="1" stop-color="#22d3ee"/>
     </linearGradient>

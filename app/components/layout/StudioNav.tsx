@@ -27,11 +27,28 @@ export function ReqLabMark({ className }: { className?: string }) {
       className={cn("size-6 shrink-0", className)}
     >
       <defs>
-        <linearGradient id={crash} x1="0" y1="0" x2="1" y2="1">
+        {/* userSpaceOnUse: the pass segment is perfectly horizontal, so an
+            objectBoundingBox gradient collapses on its zero-height box and the
+            stroke never paints. */}
+        <linearGradient
+          id={crash}
+          gradientUnits="userSpaceOnUse"
+          x1="9"
+          y1="13"
+          x2="31"
+          y2="34"
+        >
           <stop offset="0" stopColor="#fbbf24" />
           <stop offset="1" stopColor="#f43f5e" />
         </linearGradient>
-        <linearGradient id={pass} x1="0" y1="0" x2="1" y2="0">
+        <linearGradient
+          id={pass}
+          gradientUnits="userSpaceOnUse"
+          x1="31"
+          y1="24"
+          x2="39"
+          y2="24"
+        >
           <stop offset="0" stopColor="#34d399" />
           <stop offset="1" stopColor="#22d3ee" />
         </linearGradient>

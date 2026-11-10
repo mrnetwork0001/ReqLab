@@ -1,10 +1,16 @@
-<svg width="114" height="66" viewBox="0 0 114 66" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M24.5537 65.7695H0L15.0859 39.4619L37.708 0L60.4912 39.4619H39.6396L24.5537 65.7695Z" fill="white"/>
-<path d="M89.446 0H114L76.2921 65.7704H51.7383L89.446 0Z" fill="url(#paint0_linear_3201_29)"/>
-<defs>
-<linearGradient id="paint0_linear_3201_29" x1="101.702" y1="67.4791" x2="113.672" y2="-37.4275" gradientUnits="userSpaceOnUse">
-<stop stop-color="#00B5FF"/>
-<stop offset="1" stop-color="#48FFE4"/>
-</linearGradient>
-</defs>
+<svg xmlns="http://www.w3.org/2000/svg" width="148" height="112" viewBox="6 10 37 28" fill="none" role="img" aria-label="ReqLab">
+  <defs>
+    <linearGradient id="reqlab-crash-dark" gradientUnits="userSpaceOnUse" x1="9" y1="13" x2="31" y2="34">
+      <stop offset="0" stop-color="#fbbf24"/>
+      <stop offset="1" stop-color="#f43f5e"/>
+    </linearGradient>
+    <linearGradient id="reqlab-pass-dark" gradientUnits="userSpaceOnUse" x1="31" y1="24" x2="39" y2="24">
+      <stop offset="0" stop-color="#34d399"/>
+      <stop offset="1" stop-color="#22d3ee"/>
+    </linearGradient>
+  </defs>
+  <path d="M9 27 L17 27 L20.5 13 L25 34 L28 24 L31 24" fill="none" stroke="url(#reqlab-crash-dark)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M31 24 L39 24" fill="none" stroke="url(#reqlab-pass-dark)" stroke-width="2.8" stroke-linecap="round"/>
+  <circle cx="24.6" cy="33.5" r="2.1" fill="url(#reqlab-crash-dark)"/>
+  <circle cx="39" cy="24" r="2.1" fill="url(#reqlab-pass-dark)"/>
 </svg>
