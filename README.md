@@ -10,7 +10,7 @@ Built for the Builder.io Agent-Native Hackathon (Nov 2026) · for the judges, an
 
 ## Contents
 
-[The core loop](#the-core-loop) · [Why the agent is essential](#why-the-agent-is-essential) · [Architecture](#architecture) · [Safety and security model](#safety-and-security-model) · [What's real and what's simulated](#whats-real-and-whats-simulated) · [Tech stack](#tech-stack) · [Run it locally](#run-it-locally) · [Deploying](#deploying-vercel) · [Repository map](#repository-map) · [Credits](#pre-existing-work-and-credits)
+[The core loop](#the-core-loop) · [Why the agent is essential](#why-the-agent-is-essential) · [Connect your own AI agent (MCP)](#connect-your-own-ai-agent-mcp) · [Architecture](#architecture) · [Safety and security model](#safety-and-security-model) · [What's real and what's simulated](#whats-real-and-whats-simulated) · [Tech stack](#tech-stack) · [Run it locally](#run-it-locally) · [Deploying](#deploying-vercel) · [Repository map](#repository-map) · [Credits](#pre-existing-work-and-credits)
 
 **Judges, start here:** open `/studio`, click **Checkout & Charge Ledger API**, press **Run** (two rows turn red with real stack traces), then click **Bug Hunt** and watch the agent diagnose, guard, and re-run until they turn green. For proof it is not a toy, click **Import OpenAPI**, load the Swagger Petstore chip, and run `PUT /pet`: ReqLab finds a real unhandled 500 in a public API it did not write.
 
@@ -47,6 +47,31 @@ Without the agent, ReqLab is a manual request runner. The agent is what closes t
 - **No agent, no diagnosis.** A 500 in the Matrix shows the real exception name, message, and project-relative stack frames. Turning that into a root cause and a precise Zod guard is what the agent does through `update-endpoint`.
 - **Same code, two drivers.** Every capability is a typed action. The agent calls `run-scenarios`, `update-endpoint`, and `export-contract-guard`; so does the UI. Neither has a private path, so what the agent does, you can do by hand, and the screen stays in sync either way.
 - **The agent cannot lie about a result.** It does not generate verdicts. It calls an action, the action executes real code or a real network request, and the verdict is computed from the actual HTTP status and latency (`server/lib/runner.ts`).
+
+## Connect your own AI agent (MCP)
+
+ReqLab is agent-driven *and* agent-reachable, in two ways:
+
+- **Swap the built-in model.** The right-hand agent panel runs on whatever model you connect in **Settings → Agent** — the demo uses a hosted model, but the slot is pluggable.
+- **Drive ReqLab from an external agent over MCP.** Because it is an Agent-Native app, ReqLab exposes a secured MCP server, so any MCP-compatible host — Claude, Claude Desktop, Claude Code, ChatGPT, Cursor, Codex, Grok, Copilot, or Goose — can call its actions as tools (run scenarios, Bug Hunt, apply a Zod guard, import OpenAPI, export middleware) and round-trip the result into the live UI through an **"Open in ReqLab →"** deep link.
+
+```text
+MCP endpoint:  https://usereqlab.vercel.app/mcp
+```
+
+Connect it:
+
+```bash
+# Claude Code
+claude mcp add --transport http reqlab https://usereqlab.vercel.app/mcp   # then: /mcp → Authenticate
+
+# First-time setup from any terminal host (Codex, Cursor CLI, …)
+npx @agent-native/core@latest connect https://usereqlab.vercel.app
+
+# Claude Desktop / ChatGPT / Cursor: paste the /mcp URL as a custom MCP connector, then complete the OAuth sign-in.
+```
+
+The endpoint is OAuth-protected (scopes `mcp:read mcp:write mcp:apps`): the external agent authenticates as the signed-in user, and the deep link is scoped to the **browser** session, never the agent's token — so it is safe to paste into a terminal or chat transcript.
 
 ## Architecture
 
